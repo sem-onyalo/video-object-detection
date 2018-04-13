@@ -3,6 +3,13 @@
 '''
 Video object detection.
 
+Usage:
+    main.py <detection mode> <class name>
+
+    detection mode:
+        1 - detect all objects
+        2 - detect a specific object
+
 Keys:
     ESC    - exit
 
@@ -98,15 +105,12 @@ def create_capture(source = 0):
         print('Warning: unable to open video source: ', source)
     return cap
 
-def run_detection(img):
+def label_all_objects(img, detections, score_threshold):
     rows = img.shape[0]
     cols = img.shape[1]
-    cvNet.setInput(cv.dnn.blobFromImage(img, 1.0/127.5, (300, 300), (127.5, 127.5, 127.5), swapRB=True, crop=False))
-    detections = cvNet.forward()
-
-    for detection in detections[0,0,:,:]:
+    for detection in detections:
         score = float(detection[2])
-        if score > 0.3:
+        if score > score_threshold:
             left = int(detection[3] * cols)
             top = int(detection[4] * rows)
             right = int(detection[5] * cols)
@@ -123,21 +127,58 @@ def run_detection(img):
                 cv.putText(img, label, (left, top), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
     return img
 
+def label_object(img, detections, score_threshold, className):
+    rows = img.shape[0]
+    cols = img.shape[1]
+    for detection in detections:
+        score = float(detection[2])
+        class_id = int(detection[1])
+        if className in classNames.values() and className == classNames[class_id] and score > score_threshold:
+            left = int(detection[3] * cols)
+            top = int(detection[4] * rows)
+            right = int(detection[5] * cols)
+            bottom = int(detection[6] * rows)
+            cv.rectangle(img, (left, top), (right, bottom), (23, 230, 210), thickness=2)
+
+            
+            label = classNames[class_id] + ": " + str(score)
+            labelSize, baseLine = cv.getTextSize(label, cv.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+            top = max(top, labelSize[1])
+            cv.rectangle(img, (left, top - labelSize[1]), (left + labelSize[0], top + baseLine),
+                (255, 255, 255), cv.FILLED)
+            cv.putText(img, label, (left, top), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
+    return img
+
 if __name__ == '__main__':
     import sys
     import getopt
 
     print(__doc__)
-
-    cvNet = cv.dnn.readNetFromTensorflow('frozen_inference_graph.pb', 'ssd_mobilenet_v1_coco_2017_11_17.pbtxt')
+    
     sources = [ 0 ] # use default video source (webcam)
+    scoreThreshold = 0.3
+    
+    args = sys.argv[1:]
+    mode = int(args[0])
+    
+    cvNet = cv.dnn.readNetFromTensorflow('frozen_inference_graph.pb', 'ssd_mobilenet_v1_coco_2017_11_17.pbtxt')
     caps = list(map(create_capture, sources))
-    shot_idx = 0
+    
     while True:
         imgs = []
         for i, cap in enumerate(caps):
             ret, img = cap.read()
-            img = run_detection(img)
+
+            # run detection
+            cvNet.setInput(cv.dnn.blobFromImage(img, 1.0/127.5, (300, 300), (127.5, 127.5, 127.5), swapRB=True, crop=False))
+            detections = cvNet.forward()
+
+            if mode == 1:
+                img = label_all_objects(img, detections[0,0,:,:], scoreThreshold)
+            elif mode == 2:
+                className = args[1]
+                img = label_object(img, detections[0,0,:,:], scoreThreshold, className)
+            
             imgs.append(img)
             cv.imshow('capture %d' % i, img)
         ch = cv.waitKey(1)
