@@ -105,49 +105,41 @@ def create_capture(source = 0):
         print('Warning: unable to open video source: ', source)
     return cap
 
-def label_all_objects(img, detections, score_threshold):
+def label_class(img, detection, score, class_id):
     rows = img.shape[0]
     cols = img.shape[1]
+    
+    left = int(detection[3] * cols)
+    top = int(detection[4] * rows)
+    right = int(detection[5] * cols)
+    bottom = int(detection[6] * rows)
+    cv.rectangle(img, (left, top), (right, bottom), (23, 230, 210), thickness=2)
+
+    
+    label = classNames[class_id] + ": " + str(score)
+    labelSize, baseLine = cv.getTextSize(label, cv.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+    top = max(top, labelSize[1])
+    cv.rectangle(img, (left, top - labelSize[1]), (left + labelSize[0], top + baseLine),
+        (255, 255, 255), cv.FILLED)
+    cv.putText(img, label, (left, top), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
+
+    pass
+
+def detect_all_objects(img, detections, score_threshold):
     for detection in detections:
+        class_id = int(detection[1])
         score = float(detection[2])
         if score > score_threshold:
-            left = int(detection[3] * cols)
-            top = int(detection[4] * rows)
-            right = int(detection[5] * cols)
-            bottom = int(detection[6] * rows)
-            cv.rectangle(img, (left, top), (right, bottom), (23, 230, 210), thickness=2)
+            label_class(img, detection, score, class_id)
+    pass
 
-            class_id = int(detection[1])
-            if class_id in classNames:
-                label = classNames[class_id] + ": " + str(score)
-                labelSize, baseLine = cv.getTextSize(label, cv.FONT_HERSHEY_SIMPLEX, 0.5, 1)
-                top = max(top, labelSize[1])
-                cv.rectangle(img, (left, top - labelSize[1]), (left + labelSize[0], top + baseLine),
-                    (255, 255, 255), cv.FILLED)
-                cv.putText(img, label, (left, top), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
-    return img
-
-def label_object(img, detections, score_threshold, className):
-    rows = img.shape[0]
-    cols = img.shape[1]
+def detect_object(img, detections, score_threshold, className):
     for detection in detections:
         score = float(detection[2])
         class_id = int(detection[1])
         if className in classNames.values() and className == classNames[class_id] and score > score_threshold:
-            left = int(detection[3] * cols)
-            top = int(detection[4] * rows)
-            right = int(detection[5] * cols)
-            bottom = int(detection[6] * rows)
-            cv.rectangle(img, (left, top), (right, bottom), (23, 230, 210), thickness=2)
-
-            
-            label = classNames[class_id] + ": " + str(score)
-            labelSize, baseLine = cv.getTextSize(label, cv.FONT_HERSHEY_SIMPLEX, 0.5, 1)
-            top = max(top, labelSize[1])
-            cv.rectangle(img, (left, top - labelSize[1]), (left + labelSize[0], top + baseLine),
-                (255, 255, 255), cv.FILLED)
-            cv.putText(img, label, (left, top), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
-    return img
+            label_class(img, detection, score, class_id)
+    pass
 
 if __name__ == '__main__':
     import sys
@@ -165,7 +157,6 @@ if __name__ == '__main__':
     caps = list(map(create_capture, sources))
     
     while True:
-        imgs = []
         for i, cap in enumerate(caps):
             ret, img = cap.read()
 
@@ -174,12 +165,11 @@ if __name__ == '__main__':
             detections = cvNet.forward()
 
             if mode == 1:
-                img = label_all_objects(img, detections[0,0,:,:], scoreThreshold)
+                detect_all_objects(img, detections[0,0,:,:], scoreThreshold)
             elif mode == 2:
                 className = args[1]
-                img = label_object(img, detections[0,0,:,:], scoreThreshold, className)
+                detect_object(img, detections[0,0,:,:], scoreThreshold, className)
             
-            imgs.append(img)
             cv.imshow('capture %d' % i, img)
         ch = cv.waitKey(1)
         if ch == 27:
