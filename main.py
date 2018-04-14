@@ -9,6 +9,7 @@ Usage:
     detection mode:
         1 - detect all objects
         2 - detect a specific object
+        3 - track a specific object
 
 Keys:
     ESC    - exit
@@ -45,44 +46,6 @@ classNames = {
 }
 
 
-class VideoSynthBase(object):
-    def __init__(self, size=None, noise=0.0, bg = None, **params):
-        self.bg = None
-        self.frame_size = (640, 480)
-        if bg is not None:
-            self.bg = cv.imread(bg, 1)
-            h, w = self.bg.shape[:2]
-            self.frame_size = (w, h)
-
-        if size is not None:
-            w, h = map(int, size.split('x'))
-            self.frame_size = (w, h)
-            self.bg = cv.resize(self.bg, self.frame_size)
-
-        self.noise = float(noise)
-
-    def render(self, dst):
-        pass
-
-    def read(self, dst=None):
-        w, h = self.frame_size
-
-        if self.bg is None:
-            buf = np.zeros((h, w, 3), np.uint8)
-        else:
-            buf = self.bg.copy()
-
-        self.render(buf)
-
-        if self.noise > 0.0:
-            noise = np.zeros((h, w, 3), np.int8)
-            cv.randn(noise, np.zeros(3), np.ones(3)*255*self.noise)
-            buf = cv.add(buf, noise, dtype=cv.CV_8UC3)
-        return True, buf
-
-    def isOpened(self):
-        return True
-
 def create_capture(source = 0):
     source = str(source).strip()
     chunks = source.split(':')
@@ -105,23 +68,25 @@ def create_capture(source = 0):
         print('Warning: unable to open video source: ', source)
     return cap
 
-def label_class(img, detection, score, class_id):
+def label_class(img, detection, score, class_id, boxColor=None):
     rows = img.shape[0]
     cols = img.shape[1]
-    
-    left = int(detection[3] * cols)
-    top = int(detection[4] * rows)
-    right = int(detection[5] * cols)
-    bottom = int(detection[6] * rows)
-    cv.rectangle(img, (left, top), (right, bottom), (23, 230, 210), thickness=2)
 
+    if boxColor == None:
+        boxColor = (23, 230, 210)
     
+    xLeft = int(detection[3] * cols)
+    yTop = int(detection[4] * rows)
+    xRight = int(detection[5] * cols)
+    yBottom = int(detection[6] * rows)
+    cv.rectangle(img, (xLeft, yTop), (xRight, yBottom), boxColor, thickness=4)
+
     label = classNames[class_id] + ": " + str(score)
     labelSize, baseLine = cv.getTextSize(label, cv.FONT_HERSHEY_SIMPLEX, 0.5, 1)
-    top = max(top, labelSize[1])
-    cv.rectangle(img, (left, top - labelSize[1]), (left + labelSize[0], top + baseLine),
+    yTop = max(yTop, labelSize[1])
+    cv.rectangle(img, (xLeft, yTop - labelSize[1]), (xLeft + labelSize[0], yTop + baseLine),
         (255, 255, 255), cv.FILLED)
-    cv.putText(img, label, (left, top), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
+    cv.putText(img, label, (xLeft, yTop), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
 
     pass
 
@@ -141,6 +106,28 @@ def detect_object(img, detections, score_threshold, className):
             label_class(img, detection, score, class_id)
     pass
 
+def track_object(img, detections, score_threshold, className, tracking_threshold):
+    for detection in detections:
+        score = float(detection[2])
+        class_id = int(detection[1])
+        if className in classNames.values() and className == classNames[class_id] and score > score_threshold:
+            rows = img.shape[0]
+            cols = img.shape[1]
+            marginLeft = int(detection[3] * cols) # xLeft
+            marginRight = cols - int(detection[5] * cols) # cols - xRight
+            xMarginDiff = abs(marginLeft - marginRight)
+            marginTop = int(detection[4] * rows) # yTop
+            marginBottom = rows - int(detection[6] * rows) # rows - yBottom
+            yMarginDiff = abs(marginTop - marginBottom)
+            
+            if xMarginDiff < tracking_threshold and yMarginDiff < tracking_threshold:
+                boxColor = (0, 255, 0)
+            else:
+                boxColor = (0, 0, 255)
+
+            label_class(img, detection, score, class_id, boxColor)
+    pass
+
 if __name__ == '__main__':
     import sys
     import getopt
@@ -149,6 +136,7 @@ if __name__ == '__main__':
     
     sources = [ 0 ] # use default video source (webcam)
     scoreThreshold = 0.3
+    trackingThreshold = 50
     
     args = sys.argv[1:]
     mode = int(args[0])
@@ -169,6 +157,9 @@ if __name__ == '__main__':
             elif mode == 2:
                 className = args[1]
                 detect_object(img, detections[0,0,:,:], scoreThreshold, className)
+            elif mode == 3:
+                className = args[1]
+                track_object(img, detections[0,0,:,:], scoreThreshold, className, trackingThreshold)
             
             cv.imshow('capture %d' % i, img)
         ch = cv.waitKey(1)
