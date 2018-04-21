@@ -12,6 +12,7 @@ Usage:
         3 - track a specific object
 
 Keys:
+    ENTER  - change detected object
     ESC    - exit
 
 '''
@@ -81,7 +82,7 @@ def label_class(img, detection, score, class_id, boxColor=None):
     yBottom = int(detection[6] * rows)
     cv.rectangle(img, (xLeft, yTop), (xRight, yBottom), boxColor, thickness=4)
 
-    label = classNames[class_id] + ": " + str(score)
+    label = classNames[class_id] + ": " + str(int(round(score * 100))) + '%'
     labelSize, baseLine = cv.getTextSize(label, cv.FONT_HERSHEY_SIMPLEX, 0.5, 1)
     yTop = max(yTop, labelSize[1])
     cv.rectangle(img, (xLeft, yTop - labelSize[1]), (xLeft + labelSize[0], yTop + baseLine),
@@ -140,6 +141,7 @@ if __name__ == '__main__':
     
     args = sys.argv[1:]
     mode = int(args[0])
+    currentClassDetecting = args[1]
     
     cvNet = cv.dnn.readNetFromTensorflow('frozen_inference_graph.pb', 'ssd_mobilenet_v1_coco_2017_11_17.pbtxt')
     caps = list(map(create_capture, sources))
@@ -155,14 +157,30 @@ if __name__ == '__main__':
             if mode == 1:
                 detect_all_objects(img, detections[0,0,:,:], scoreThreshold)
             elif mode == 2:
-                className = args[1]
-                detect_object(img, detections[0,0,:,:], scoreThreshold, className)
+                detect_object(img, detections[0,0,:,:], scoreThreshold, currentClassDetecting)
             elif mode == 3:
-                className = args[1]
-                track_object(img, detections[0,0,:,:], scoreThreshold, className, trackingThreshold)
+                track_object(img, detections[0,0,:,:], scoreThreshold, currentClassDetecting, trackingThreshold)
             
             cv.imshow('capture %d' % i, img)
         ch = cv.waitKey(1)
+        
+        if ch == 13:
+            print('\nEnter new object to detect ')
+            newClass = ''
+            ch = cv.waitKey()
+            while ch != 13:
+                input = chr(ch)
+                print(input, end='', flush=True)
+                newClass += input
+                ch = cv.waitKey()
+
+            if newClass in classNames.values():
+                currentClassDetecting = newClass
+                print('\nNow detecting: ' + newClass)
+            else:
+                print('\nThat is not a valid object to detect')
+
         if ch == 27:
             break
+            
     cv.destroyAllWindows()
