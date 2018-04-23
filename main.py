@@ -24,8 +24,16 @@ import numpy as np
 from numpy import pi, sin, cos
 
 import cv2 as cv
+import threading
+import speech_recognition as sr
 
+mic = None
 cvNet = None
+showVideoStream = False
+currentClassDetecting = 'background'
+
+rc = sr.Recognizer()
+mic = sr.Microphone()
 
 classNames = { 
     0: 'background', 1: 'person', 2: 'bicycle', 3: 'car', 4: 'motorcycle', 5: 'airplane',
@@ -88,7 +96,6 @@ def label_class(img, detection, score, class_id, boxColor=None):
     cv.rectangle(img, (xLeft, yTop - labelSize[1]), (xLeft + labelSize[0], yTop + baseLine),
         (255, 255, 255), cv.FILLED)
     cv.putText(img, label, (xLeft, yTop), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
-
     pass
 
 def detect_all_objects(img, detections, score_threshold):
@@ -129,58 +136,68 @@ def track_object(img, detections, score_threshold, className, tracking_threshold
             label_class(img, detection, score, class_id, boxColor)
     pass
 
+def change_detected_object():
+    with mic as source:
+        rc.adjust_for_ambient_noise(source)
+        print('Say something now')
+        audio = rc.listen(source)
+
+    result = rc.recognize_google(audio).lower()
+
+    if result in classNames.values():
+        global currentClassDetecting
+        currentClassDetecting = result
+        print('Now detecting: ' + result)
+    else:
+        print('The object ' + result + ' is not valid')
+    pass
+
+def run_video_detection(mode):
+    scoreThreshold = 0.3
+    trackingThreshold = 50
+
+    cvNet = cv.dnn.readNetFromTensorflow('frozen_inference_graph.pb', 'ssd_mobilenet_v1_coco_2017_11_17.pbtxt')
+    cap = create_capture()
+    
+    while showVideoStream:
+        ret, img = cap.read()
+
+        # run detection
+        cvNet.setInput(cv.dnn.blobFromImage(img, 1.0/127.5, (300, 300), (127.5, 127.5, 127.5), swapRB=True, crop=False))
+        detections = cvNet.forward()
+
+        if mode == 1:
+            detect_all_objects(img, detections[0,0,:,:], scoreThreshold)
+        elif mode == 2:
+            detect_object(img, detections[0,0,:,:], scoreThreshold, currentClassDetecting)
+        elif mode == 3:
+            track_object(img, detections[0,0,:,:], scoreThreshold, currentClassDetecting, trackingThreshold)
+        
+        cv.imshow('Real-Time Object Detection', img)
+
+        ch = cv.waitKey(1)
+        if ch == 27:
+            break
+        elif ch == 13:
+            changeDetected = threading.Thread(target=change_detected_object)
+            changeDetected.start()
+
+    cv.destroyAllWindows()
+    pass
+
 if __name__ == '__main__':
     import sys
     import getopt
 
     print(__doc__)
     
-    sources = [ 0 ] # use default video source (webcam)
-    scoreThreshold = 0.3
-    trackingThreshold = 50
-    
     args = sys.argv[1:]
     mode = int(args[0])
-    currentClassDetecting = args[1]
     
-    cvNet = cv.dnn.readNetFromTensorflow('frozen_inference_graph.pb', 'ssd_mobilenet_v1_coco_2017_11_17.pbtxt')
-    caps = list(map(create_capture, sources))
+    if mode > 1:
+        currentClassDetecting = args[1]
     
-    while True:
-        for i, cap in enumerate(caps):
-            ret, img = cap.read()
+    videoStreamThread = threading.Thread(target=run_video_detection, args=[mode])
 
-            # run detection
-            cvNet.setInput(cv.dnn.blobFromImage(img, 1.0/127.5, (300, 300), (127.5, 127.5, 127.5), swapRB=True, crop=False))
-            detections = cvNet.forward()
-
-            if mode == 1:
-                detect_all_objects(img, detections[0,0,:,:], scoreThreshold)
-            elif mode == 2:
-                detect_object(img, detections[0,0,:,:], scoreThreshold, currentClassDetecting)
-            elif mode == 3:
-                track_object(img, detections[0,0,:,:], scoreThreshold, currentClassDetecting, trackingThreshold)
-            
-            cv.imshow('capture %d' % i, img)
-        ch = cv.waitKey(1)
-        
-        if ch == 13:
-            print('\nEnter new object to detect ')
-            newClass = ''
-            ch = cv.waitKey()
-            while ch != 13:
-                input = chr(ch)
-                print(input, end='', flush=True)
-                newClass += input
-                ch = cv.waitKey()
-
-            if newClass in classNames.values():
-                currentClassDetecting = newClass
-                print('\nNow detecting: ' + newClass)
-            else:
-                print('\nThat is not a valid object to detect')
-
-        if ch == 27:
-            break
-            
-    cv.destroyAllWindows()
+    showVideoStream = True
+    videoStreamThread.start()
