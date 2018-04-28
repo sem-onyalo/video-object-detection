@@ -26,14 +26,17 @@ from numpy import pi, sin, cos
 import cv2 as cv
 import threading
 import speech_recognition as sr
+import pyaudio
+import wave
 
-mic = None
 cvNet = None
+myName = 'computer'
 showVideoStream = False
 currentClassDetecting = 'background'
+audio_yes = 'audio/yes.wav'
+audio_okay = 'audio/okay.wav'
+audio_invalid = 'audio/invalid.wav'
 
-rc = sr.Recognizer()
-mic = sr.Microphone()
 
 classNames = { 
     0: 'background', 1: 'person', 2: 'bicycle', 3: 'car', 4: 'motorcycle', 5: 'airplane',
@@ -136,21 +139,54 @@ def track_object(img, detections, score_threshold, className, tracking_threshold
             label_class(img, detection, score, class_id, boxColor)
     pass
 
-def change_detected_object():
-    with mic as source:
-        rc.adjust_for_ambient_noise(source)
-        print('Say something now')
-        audio = rc.listen(source)
+def play_audio(audioFile):
+    chunk = 1024
+    wf = wave.open(audioFile, 'rb')
+    pa = pyaudio.PyAudio()
+    stream = pa.open(format = pa.get_format_from_width(wf.getsampwidth()),
+                    channels = wf.getnchannels(),
+                    rate = wf.getframerate(),
+                    output = True)
 
-    result = rc.recognize_google(audio).lower()
+    data = wf.readframes(chunk)
+    while len(data) > 0:
+        stream.write(data)
+        data = wf.readframes(chunk)
 
-    if result in classNames.values():
-        global currentClassDetecting
-        currentClassDetecting = result
-        print('Now detecting: ' + result)
-    else:
-        print('The object ' + result + ' is not valid')
+    stream.stop_stream()
+    stream.close()
+    pa.terminate()
+
+def await_command():
+    rc = sr.Recognizer()
+    while showVideoStream:
+        mic = sr.Microphone()
+        with mic as source:
+            rc.adjust_for_ambient_noise(source)
+            try:
+                audio = rc.listen(source)
+                result = rc.recognize_google(audio).lower()
+                if result == myName:
+                    play_audio(audio_yes)
+                    print('Say command')
+                    audio = rc.listen(source)
+
+                    result = rc.recognize_google(audio).lower()
+                    if result in classNames.values():
+                        global currentClassDetecting
+                        currentClassDetecting = result
+                        print('Now detecting: ' + result)
+                        play_audio(audio_okay)
+                    else:
+                        print('The object ' + result + ' is invalid')
+                        play_audio(audio_invalid)
+
+            except:
+                pass # ignore unrecognizable audio
+
+    print('exiting await_command...')
     pass
+
 
 def run_video_detection(mode):
     scoreThreshold = 0.3
@@ -159,6 +195,7 @@ def run_video_detection(mode):
     cvNet = cv.dnn.readNetFromTensorflow('frozen_inference_graph.pb', 'ssd_mobilenet_v1_coco_2017_11_17.pbtxt')
     cap = create_capture()
     
+    global showVideoStream
     while showVideoStream:
         ret, img = cap.read()
 
@@ -177,11 +214,10 @@ def run_video_detection(mode):
 
         ch = cv.waitKey(1)
         if ch == 27:
+            showVideoStream = False
             break
-        elif ch == 13:
-            changeDetected = threading.Thread(target=change_detected_object)
-            changeDetected.start()
 
+    print('exiting run_video_detection...')
     cv.destroyAllWindows()
     pass
 
@@ -198,6 +234,8 @@ if __name__ == '__main__':
         currentClassDetecting = args[1]
     
     videoStreamThread = threading.Thread(target=run_video_detection, args=[mode])
+    commandThread = threading.Thread(target=await_command)
 
     showVideoStream = True
     videoStreamThread.start()
+    commandThread.start()
