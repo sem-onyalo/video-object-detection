@@ -4,17 +4,27 @@
 Video object detection.
 
 Usage:
-    main.py <detection mode> <class name>
+    main.py [-h] [--detect_class DETECT_CLASS] [--voice_cmd]
+               net_model detect_mode
 
-    detection mode:
+    net_model:
+        0 - MobileNet SSD V1 COCO
+        1 - MobileNet SSD V1 BALLS
+
+    detect_mode:
         1 - detect all objects
         2 - detect a specific object
         3 - track a specific object
 
+    --detect_class:
+        Required when detection mode > 1
+
+    --voice_cmd:
+        Enable voice commands
+
 Keys:
     ENTER  - change detected object
     ESC    - exit
-
 '''
 
 # Python 2/3 compatibility
@@ -37,25 +47,37 @@ audio_yes = 'audio/yes.wav'
 audio_okay = 'audio/okay.wav'
 audio_invalid = 'audio/invalid.wav'
 
-
-classNames = { 
-    0: 'background', 1: 'person', 2: 'bicycle', 3: 'car', 4: 'motorcycle', 5: 'airplane',
-    6: 'bus', 7: 'train', 8: 'truck', 9: 'boat', 10: 'traffic light', 11: 'fire hydrant',
-    13: 'stop sign', 14: 'parking meter', 15: 'bench', 16: 'bird', 17: 'cat',
-    18: 'dog', 19: 'horse', 20: 'sheep', 21: 'cow', 22: 'elephant', 23: 'bear',
-    24: 'zebra', 25: 'giraffe', 27: 'backpack', 28: 'umbrella', 31: 'handbag',
-    32: 'tie', 33: 'suitcase', 34: 'frisbee', 35: 'skis', 36: 'snowboard',
-    37: 'sports ball', 38: 'kite', 39: 'baseball bat', 40: 'baseball glove',
-    41: 'skateboard', 42: 'surfboard', 43: 'tennis racket', 44: 'bottle',
-    46: 'wine glass', 47: 'cup', 48: 'fork', 49: 'knife', 50: 'spoon',
-    51: 'bowl', 52: 'banana', 53: 'apple', 54: 'sandwich', 55: 'orange',
-    56: 'broccoli', 57: 'carrot', 58: 'hot dog', 59: 'pizza', 60: 'donut',
-    61: 'cake', 62: 'chair', 63: 'couch', 64: 'potted plant', 65: 'bed',
-    67: 'dining table', 70: 'toilet', 72: 'tv', 73: 'laptop', 74: 'mouse',
-    75: 'remote', 76: 'keyboard', 77: 'cell phone', 78: 'microwave', 79: 'oven',
-    80: 'toaster', 81: 'sink', 82: 'refrigerator', 84: 'book', 85: 'clock',
-    86: 'vase', 87: 'scissors', 88: 'teddy bear', 89: 'hair drier', 90: 'toothbrush' 
-}
+netModels = [
+    {
+        'modelPath': 'models/mobilenet_ssd_v1_coco/frozen_inference_graph.pb',
+        'configPath': 'models/mobilenet_ssd_v1_coco/ssd_mobilenet_v1_coco_2017_11_17.pbtxt',
+        'classNames': { 
+            0: 'background', 1: 'person', 2: 'bicycle', 3: 'car', 4: 'motorcycle', 5: 'airplane',
+            6: 'bus', 7: 'train', 8: 'truck', 9: 'boat', 10: 'traffic light', 11: 'fire hydrant',
+            13: 'stop sign', 14: 'parking meter', 15: 'bench', 16: 'bird', 17: 'cat',
+            18: 'dog', 19: 'horse', 20: 'sheep', 21: 'cow', 22: 'elephant', 23: 'bear',
+            24: 'zebra', 25: 'giraffe', 27: 'backpack', 28: 'umbrella', 31: 'handbag',
+            32: 'tie', 33: 'suitcase', 34: 'frisbee', 35: 'skis', 36: 'snowboard',
+            37: 'sports ball', 38: 'kite', 39: 'baseball bat', 40: 'baseball glove',
+            41: 'skateboard', 42: 'surfboard', 43: 'tennis racket', 44: 'bottle',
+            46: 'wine glass', 47: 'cup', 48: 'fork', 49: 'knife', 50: 'spoon',
+            51: 'bowl', 52: 'banana', 53: 'apple', 54: 'sandwich', 55: 'orange',
+            56: 'broccoli', 57: 'carrot', 58: 'hot dog', 59: 'pizza', 60: 'donut',
+            61: 'cake', 62: 'chair', 63: 'couch', 64: 'potted plant', 65: 'bed',
+            67: 'dining table', 70: 'toilet', 72: 'tv', 73: 'laptop', 74: 'mouse',
+            75: 'remote', 76: 'keyboard', 77: 'cell phone', 78: 'microwave', 79: 'oven',
+            80: 'toaster', 81: 'sink', 82: 'refrigerator', 84: 'book', 85: 'clock',
+            86: 'vase', 87: 'scissors', 88: 'teddy bear', 89: 'hair drier', 90: 'toothbrush' 
+        }
+    },
+    {
+        'modelPath': 'models/mobilenet_ssd_v1_balls/transformed_frozen_inference_graph.pb',
+        'configPath': 'models/mobilenet_ssd_v1_balls/ssd_mobilenet_v1_balls_2018_05_20.pbtxt',
+        'classNames': {
+            0: 'background', 1: 'red ball'
+        }
+    }
+]
 
 
 def create_capture(source = 0):
@@ -80,7 +102,7 @@ def create_capture(source = 0):
         print('Warning: unable to open video source: ', source)
     return cap
 
-def label_class(img, detection, score, class_id, boxColor=None):
+def label_class(img, detection, score, className, boxColor=None):
     rows = img.shape[0]
     cols = img.shape[1]
 
@@ -93,7 +115,7 @@ def label_class(img, detection, score, class_id, boxColor=None):
     yBottom = int(detection[6] * rows)
     cv.rectangle(img, (xLeft, yTop), (xRight, yBottom), boxColor, thickness=4)
 
-    label = classNames[class_id] + ": " + str(int(round(score * 100))) + '%'
+    label = className + ": " + str(int(round(score * 100))) + '%'
     labelSize, baseLine = cv.getTextSize(label, cv.FONT_HERSHEY_SIMPLEX, 0.5, 1)
     yTop = max(yTop, labelSize[1])
     cv.rectangle(img, (xLeft, yTop - labelSize[1]), (xLeft + labelSize[0], yTop + baseLine),
@@ -101,23 +123,23 @@ def label_class(img, detection, score, class_id, boxColor=None):
     cv.putText(img, label, (xLeft, yTop), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
     pass
 
-def detect_all_objects(img, detections, score_threshold):
+def detect_all_objects(img, detections, score_threshold, classNames):
     for detection in detections:
         class_id = int(detection[1])
         score = float(detection[2])
         if score > score_threshold:
-            label_class(img, detection, score, class_id)
+            label_class(img, detection, score, classNames[class_id])
     pass
 
-def detect_object(img, detections, score_threshold, className):
+def detect_object(img, detections, score_threshold, classNames, className):
     for detection in detections:
         score = float(detection[2])
         class_id = int(detection[1])
         if className in classNames.values() and className == classNames[class_id] and score > score_threshold:
-            label_class(img, detection, score, class_id)
+            label_class(img, detection, score, classNames[class_id])
     pass
 
-def track_object(img, detections, score_threshold, className, tracking_threshold):
+def track_object(img, detections, score_threshold, classNames, className, tracking_threshold):
     for detection in detections:
         score = float(detection[2])
         class_id = int(detection[1])
@@ -136,7 +158,7 @@ def track_object(img, detections, score_threshold, className, tracking_threshold
             else:
                 boxColor = (0, 0, 255)
 
-            label_class(img, detection, score, class_id, boxColor)
+            label_class(img, detection, score, classNames[class_id], boxColor)
     pass
 
 def play_audio(audioFile):
@@ -157,7 +179,7 @@ def play_audio(audioFile):
     stream.close()
     pa.terminate()
 
-def await_command():
+def run_voice_command(classNames):
     rc = sr.Recognizer()
     while showVideoStream:
         mic = sr.Microphone()
@@ -184,15 +206,15 @@ def await_command():
             except:
                 pass # ignore unrecognizable audio
 
-    print('exiting await_command...')
+    print('exiting run_voice_command...')
     pass
 
 
-def run_video_detection(mode):
+def run_video_detection(mode, netModel):
     scoreThreshold = 0.3
     trackingThreshold = 50
 
-    cvNet = cv.dnn.readNetFromTensorflow('frozen_inference_graph.pb', 'ssd_mobilenet_v1_coco_2017_11_17.pbtxt')
+    cvNet = cv.dnn.readNetFromTensorflow(netModel['modelPath'], netModel['configPath'])
     cap = create_capture()
     
     global showVideoStream
@@ -204,11 +226,11 @@ def run_video_detection(mode):
         detections = cvNet.forward()
 
         if mode == 1:
-            detect_all_objects(img, detections[0,0,:,:], scoreThreshold)
+            detect_all_objects(img, detections[0,0,:,:], scoreThreshold, netModel['classNames'])
         elif mode == 2:
-            detect_object(img, detections[0,0,:,:], scoreThreshold, currentClassDetecting)
+            detect_object(img, detections[0,0,:,:], scoreThreshold, netModel['classNames'], currentClassDetecting)
         elif mode == 3:
-            track_object(img, detections[0,0,:,:], scoreThreshold, currentClassDetecting, trackingThreshold)
+            track_object(img, detections[0,0,:,:], scoreThreshold, netModel['classNames'], currentClassDetecting, trackingThreshold)
         
         cv.imshow('Real-Time Object Detection', img)
 
@@ -223,19 +245,31 @@ def run_video_detection(mode):
 
 if __name__ == '__main__':
     import sys
-    import getopt
+    import argparse
 
-    print(__doc__)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("net_model", type=int, help="The network model id: \
+        0 - MobileNet SSD V1 COCO \
+        1 - MobileNet SSD V1 BALLS")
+    parser.add_argument("detect_mode", type=int, help="The detection mode: \
+        1 - detect all objects \
+        2 - detect a specific object \
+        3 - track a specific object")
+    parser.add_argument("--detect_class", help="The class to detect. Required when mode > 1")
+    parser.add_argument("--voice_cmd", help="Enable voice commands", action="store_true")
+    args = parser.parse_args()
     
-    args = sys.argv[1:]
-    mode = int(args[0])
+    if args.detect_mode > 1:
+        if args.detect_class is None:
+            print("Error: You must specify a class to detect if detection mode > 1")
+            sys.exit(0)
+        else:
+            currentClassDetecting = args.detect_class
     
-    if mode > 1:
-        currentClassDetecting = args[1]
-    
-    videoStreamThread = threading.Thread(target=run_video_detection, args=[mode])
-    commandThread = threading.Thread(target=await_command)
-
     showVideoStream = True
+    videoStreamThread = threading.Thread(target=run_video_detection, args=[args.detect_mode,netModels[args.net_model]])
     videoStreamThread.start()
-    commandThread.start()
+
+    if args.voice_cmd:
+        voiceCommandThread = threading.Thread(target=run_voice_command, args=[netModels[args.net_model]['classNames']])
+        voiceCommandThread.start()

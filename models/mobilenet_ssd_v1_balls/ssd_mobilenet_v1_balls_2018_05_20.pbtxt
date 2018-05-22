@@ -1,0 +1,2902 @@
+node {
+  name: "image_tensor"
+  op: "Placeholder"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_UINT8
+    }
+  }
+  attr {
+    key: "shape"
+    value {
+      shape {
+        dim {
+          size: -1
+        }
+        dim {
+          size: -1
+        }
+        dim {
+          size: -1
+        }
+        dim {
+          size: 3
+        }
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_0/Conv2D"
+  op: "Conv2D"
+  input: "image_tensor"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_0/weights/read/_24__cf__27"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 2
+        i: 2
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_0/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_0/Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_0/BatchNorm/batchnorm/mul/_75__cf__78"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_0/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_0/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_0/BatchNorm/batchnorm/sub/_76__cf__79"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_0/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_0/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_1_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_0/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_1_depthwise/depthwise_weights/read/_57__cf__60"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_1_depthwise/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_1_depthwise/depthwise"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_1_depthwise/BatchNorm/batchnorm/mul/_93__cf__96"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_1_depthwise/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_1_depthwise/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_1_depthwise/BatchNorm/batchnorm/sub/_94__cf__97"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_1_depthwise/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_1_depthwise/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_1_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_1_depthwise/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_1_pointwise/weights/read/_58__cf__61"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_1_pointwise/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_1_pointwise/Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_1_pointwise/BatchNorm/batchnorm/mul/_95__cf__98"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_1_pointwise/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_1_pointwise/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_1_pointwise/BatchNorm/batchnorm/sub/_96__cf__99"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_1_pointwise/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_1_pointwise/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_2_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_1_pointwise/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_2_depthwise/depthwise_weights/read/_59__cf__62"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 2
+        i: 2
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_2_depthwise/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_2_depthwise/depthwise"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_2_depthwise/BatchNorm/batchnorm/mul/_97__cf__100"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_2_depthwise/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_2_depthwise/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_2_depthwise/BatchNorm/batchnorm/sub/_98__cf__101"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_2_depthwise/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_2_depthwise/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_2_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_2_depthwise/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_2_pointwise/weights/read/_60__cf__63"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_2_pointwise/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_2_pointwise/Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_2_pointwise/BatchNorm/batchnorm/mul/_99__cf__102"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_2_pointwise/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_2_pointwise/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_2_pointwise/BatchNorm/batchnorm/sub/_100__cf__103"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_2_pointwise/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_2_pointwise/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_3_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_2_pointwise/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_3_depthwise/depthwise_weights/read/_61__cf__64"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_3_depthwise/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_3_depthwise/depthwise"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_3_depthwise/BatchNorm/batchnorm/mul/_101__cf__104"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_3_depthwise/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_3_depthwise/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_3_depthwise/BatchNorm/batchnorm/sub/_102__cf__105"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_3_depthwise/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_3_depthwise/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_3_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_3_depthwise/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_3_pointwise/weights/read/_62__cf__65"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_3_pointwise/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_3_pointwise/Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_3_pointwise/BatchNorm/batchnorm/mul/_103__cf__106"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_3_pointwise/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_3_pointwise/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_3_pointwise/BatchNorm/batchnorm/sub/_104__cf__107"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_3_pointwise/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_3_pointwise/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_4_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_3_pointwise/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_4_depthwise/depthwise_weights/read/_63__cf__66"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 2
+        i: 2
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_4_depthwise/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_4_depthwise/depthwise"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_4_depthwise/BatchNorm/batchnorm/mul/_105__cf__108"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_4_depthwise/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_4_depthwise/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_4_depthwise/BatchNorm/batchnorm/sub/_106__cf__109"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_4_depthwise/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_4_depthwise/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_4_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_4_depthwise/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_4_pointwise/weights/read/_64__cf__67"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_4_pointwise/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_4_pointwise/Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_4_pointwise/BatchNorm/batchnorm/mul/_107__cf__110"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_4_pointwise/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_4_pointwise/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_4_pointwise/BatchNorm/batchnorm/sub/_108__cf__111"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_4_pointwise/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_4_pointwise/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_5_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_4_pointwise/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_5_depthwise/depthwise_weights/read/_65__cf__68"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_5_depthwise/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_5_depthwise/depthwise"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_5_depthwise/BatchNorm/batchnorm/mul/_109__cf__112"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_5_depthwise/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_5_depthwise/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_5_depthwise/BatchNorm/batchnorm/sub/_110__cf__113"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_5_depthwise/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_5_depthwise/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_5_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_5_depthwise/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_5_pointwise/weights/read/_66__cf__69"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_5_pointwise/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_5_pointwise/Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_5_pointwise/BatchNorm/batchnorm/mul/_111__cf__114"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_5_pointwise/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_5_pointwise/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_5_pointwise/BatchNorm/batchnorm/sub/_112__cf__115"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_5_pointwise/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_5_pointwise/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_6_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_5_pointwise/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_6_depthwise/depthwise_weights/read/_67__cf__70"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 2
+        i: 2
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_6_depthwise/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_6_depthwise/depthwise"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_6_depthwise/BatchNorm/batchnorm/mul/_113__cf__116"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_6_depthwise/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_6_depthwise/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_6_depthwise/BatchNorm/batchnorm/sub/_114__cf__117"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_6_depthwise/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_6_depthwise/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_6_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_6_depthwise/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_6_pointwise/weights/read/_68__cf__71"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_6_pointwise/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_6_pointwise/Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_6_pointwise/BatchNorm/batchnorm/mul/_115__cf__118"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_6_pointwise/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_6_pointwise/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_6_pointwise/BatchNorm/batchnorm/sub/_116__cf__119"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_6_pointwise/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_6_pointwise/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_7_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_6_pointwise/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_7_depthwise/depthwise_weights/read/_69__cf__72"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_7_depthwise/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_7_depthwise/depthwise"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_7_depthwise/BatchNorm/batchnorm/mul/_117__cf__120"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_7_depthwise/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_7_depthwise/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_7_depthwise/BatchNorm/batchnorm/sub/_118__cf__121"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_7_depthwise/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_7_depthwise/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_7_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_7_depthwise/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_7_pointwise/weights/read/_70__cf__73"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_7_pointwise/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_7_pointwise/Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_7_pointwise/BatchNorm/batchnorm/mul/_119__cf__122"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_7_pointwise/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_7_pointwise/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_7_pointwise/BatchNorm/batchnorm/sub/_120__cf__123"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_7_pointwise/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_7_pointwise/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_8_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_7_pointwise/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_8_depthwise/depthwise_weights/read/_71__cf__74"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_8_depthwise/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_8_depthwise/depthwise"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_8_depthwise/BatchNorm/batchnorm/mul/_121__cf__124"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_8_depthwise/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_8_depthwise/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_8_depthwise/BatchNorm/batchnorm/sub/_122__cf__125"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_8_depthwise/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_8_depthwise/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_8_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_8_depthwise/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_8_pointwise/weights/read/_72__cf__75"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_8_pointwise/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_8_pointwise/Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_8_pointwise/BatchNorm/batchnorm/mul/_123__cf__126"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_8_pointwise/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_8_pointwise/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_8_pointwise/BatchNorm/batchnorm/sub/_124__cf__127"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_8_pointwise/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_8_pointwise/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_9_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_8_pointwise/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_9_depthwise/depthwise_weights/read/_73__cf__76"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_9_depthwise/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_9_depthwise/depthwise"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_9_depthwise/BatchNorm/batchnorm/mul/_125__cf__128"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_9_depthwise/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_9_depthwise/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_9_depthwise/BatchNorm/batchnorm/sub/_126__cf__129"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_9_depthwise/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_9_depthwise/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_9_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_9_depthwise/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_9_pointwise/weights/read/_74__cf__77"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_9_pointwise/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_9_pointwise/Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_9_pointwise/BatchNorm/batchnorm/mul/_127__cf__130"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_9_pointwise/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_9_pointwise/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_9_pointwise/BatchNorm/batchnorm/sub/_128__cf__131"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_9_pointwise/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_9_pointwise/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_10_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_9_pointwise/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_10_depthwise/depthwise_weights/read/_25__cf__28"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_10_depthwise/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_10_depthwise/depthwise"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_10_depthwise/BatchNorm/batchnorm/mul/_77__cf__80"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_10_depthwise/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_10_depthwise/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_10_depthwise/BatchNorm/batchnorm/sub/_78__cf__81"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_10_depthwise/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_10_depthwise/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_10_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_10_depthwise/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_10_pointwise/weights/read/_26__cf__29"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_10_pointwise/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_10_pointwise/Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_10_pointwise/BatchNorm/batchnorm/mul/_79__cf__82"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_10_pointwise/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_10_pointwise/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_10_pointwise/BatchNorm/batchnorm/sub/_80__cf__83"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_10_pointwise/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_10_pointwise/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_11_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_10_pointwise/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_11_depthwise/depthwise_weights/read/_27__cf__30"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_11_depthwise/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_11_depthwise/depthwise"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_11_depthwise/BatchNorm/batchnorm/mul/_81__cf__84"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_11_depthwise/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_11_depthwise/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_11_depthwise/BatchNorm/batchnorm/sub/_82__cf__85"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_11_depthwise/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_11_depthwise/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_11_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_11_depthwise/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_11_pointwise/weights/read/_28__cf__31"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_11_pointwise/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_11_pointwise/Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_11_pointwise/BatchNorm/batchnorm/mul/_83__cf__86"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_11_pointwise/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_11_pointwise/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_11_pointwise/BatchNorm/batchnorm/sub/_84__cf__87"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_11_pointwise/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_11_pointwise/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_12_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_11_pointwise/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_12_depthwise/depthwise_weights/read/_29__cf__32"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 2
+        i: 2
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_12_depthwise/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_12_depthwise/depthwise"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_12_depthwise/BatchNorm/batchnorm/mul/_85__cf__88"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_12_depthwise/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_12_depthwise/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_12_depthwise/BatchNorm/batchnorm/sub/_86__cf__89"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_12_depthwise/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_12_depthwise/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_12_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_12_depthwise/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_12_pointwise/weights/read/_30__cf__33"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_12_pointwise/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_12_pointwise/Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_12_pointwise/BatchNorm/batchnorm/mul/_87__cf__90"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_12_pointwise/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_12_pointwise/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_12_pointwise/BatchNorm/batchnorm/sub/_88__cf__91"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_12_pointwise/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_12_pointwise/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_13_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_12_pointwise/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_depthwise/depthwise_weights/read/_31__cf__34"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_13_depthwise/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_13_depthwise/depthwise"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_13_depthwise/BatchNorm/batchnorm/mul/_89__cf__92"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_13_depthwise/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_13_depthwise/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_13_depthwise/BatchNorm/batchnorm/sub/_90__cf__93"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_13_depthwise/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_13_depthwise/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_13_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_13_depthwise/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise/weights/read/_32__cf__35"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_13_pointwise/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_13_pointwise/Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_13_pointwise/BatchNorm/batchnorm/mul/_91__cf__94"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_13_pointwise/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_13_pointwise/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_13_pointwise/BatchNorm/batchnorm/sub/_92__cf__95"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_13_pointwise/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_13_pointwise/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_2_1x1_256/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_13_pointwise/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_2_1x1_256/weights/read/_35__cf__38"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_2_1x1_256/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_2_1x1_256/Conv2D"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_2_1x1_256/BatchNorm/batchnorm/mul/_33__cf__36"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_2_1x1_256/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_2_1x1_256/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_2_1x1_256/BatchNorm/batchnorm/sub/_34__cf__37"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_2_1x1_256/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_2_1x1_256/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_2_3x3_s2_512/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_2_1x1_256/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_2_3x3_s2_512/weights/read/_47__cf__50"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 2
+        i: 2
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_2_3x3_s2_512/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_2_3x3_s2_512/Conv2D"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_2_3x3_s2_512/BatchNorm/batchnorm/mul/_45__cf__48"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_2_3x3_s2_512/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_2_3x3_s2_512/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_2_3x3_s2_512/BatchNorm/batchnorm/sub/_46__cf__49"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_2_3x3_s2_512/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_2_3x3_s2_512/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_3_1x1_128/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_2_3x3_s2_512/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_3_1x1_128/weights/read/_38__cf__41"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_3_1x1_128/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_3_1x1_128/Conv2D"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_3_1x1_128/BatchNorm/batchnorm/mul/_36__cf__39"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_3_1x1_128/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_3_1x1_128/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_3_1x1_128/BatchNorm/batchnorm/sub/_37__cf__40"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_3_1x1_128/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_3_1x1_128/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_3_3x3_s2_256/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_3_1x1_128/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_3_3x3_s2_256/weights/read/_50__cf__53"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 2
+        i: 2
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_3_3x3_s2_256/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_3_3x3_s2_256/Conv2D"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_3_3x3_s2_256/BatchNorm/batchnorm/mul/_48__cf__51"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_3_3x3_s2_256/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_3_3x3_s2_256/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_3_3x3_s2_256/BatchNorm/batchnorm/sub/_49__cf__52"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_3_3x3_s2_256/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_3_3x3_s2_256/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_4_1x1_128/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_3_3x3_s2_256/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_4_1x1_128/weights/read/_41__cf__44"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_4_1x1_128/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_4_1x1_128/Conv2D"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_4_1x1_128/BatchNorm/batchnorm/mul/_39__cf__42"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_4_1x1_128/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_4_1x1_128/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_4_1x1_128/BatchNorm/batchnorm/sub/_40__cf__43"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_4_1x1_128/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_4_1x1_128/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_4_3x3_s2_256/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_4_1x1_128/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_4_3x3_s2_256/weights/read/_53__cf__56"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 2
+        i: 2
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_4_3x3_s2_256/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_4_3x3_s2_256/Conv2D"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_4_3x3_s2_256/BatchNorm/batchnorm/mul/_51__cf__54"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_4_3x3_s2_256/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_4_3x3_s2_256/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_4_3x3_s2_256/BatchNorm/batchnorm/sub/_52__cf__55"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_4_3x3_s2_256/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_4_3x3_s2_256/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_5_1x1_64/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_4_3x3_s2_256/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_5_1x1_64/weights/read/_44__cf__47"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_5_1x1_64/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_5_1x1_64/Conv2D"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_5_1x1_64/BatchNorm/batchnorm/mul/_42__cf__45"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_5_1x1_64/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_5_1x1_64/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_5_1x1_64/BatchNorm/batchnorm/sub/_43__cf__46"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_5_1x1_64/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_5_1x1_64/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_5_3x3_s2_128/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_1_Conv2d_5_1x1_64/Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_5_3x3_s2_128/weights/read/_56__cf__59"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 2
+        i: 2
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_5_3x3_s2_128/BatchNorm/batchnorm/mul_1"
+  op: "Mul"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_5_3x3_s2_128/Conv2D"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_5_3x3_s2_128/BatchNorm/batchnorm/mul/_54__cf__57"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_5_3x3_s2_128/BatchNorm/batchnorm/add_1"
+  op: "Add"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_5_3x3_s2_128/BatchNorm/batchnorm/mul_1"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_5_3x3_s2_128/BatchNorm/batchnorm/sub/_55__cf__58"
+}
+node {
+  name: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_5_3x3_s2_128/Relu6"
+  op: "Relu6"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_5_3x3_s2_128/BatchNorm/batchnorm/add_1"
+}
+node {
+  name: "BoxPredictor_5/BoxEncodingPredictor/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_5_3x3_s2_128/Relu6"
+  input: "BoxPredictor_5/BoxEncodingPredictor/weights/read/_21__cf__24"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "BoxPredictor_5/BoxEncodingPredictor/BiasAdd"
+  op: "BiasAdd"
+  input: "BoxPredictor_5/BoxEncodingPredictor/Conv2D"
+  input: "BoxPredictor_5/BoxEncodingPredictor/biases/read/_20__cf__23"
+}
+node {
+  name: "BoxPredictor_5/ClassPredictor/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_5_3x3_s2_128/Relu6"
+  input: "BoxPredictor_5/ClassPredictor/weights/read/_23__cf__26"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "BoxPredictor_5/ClassPredictor/BiasAdd"
+  op: "BiasAdd"
+  input: "BoxPredictor_5/ClassPredictor/Conv2D"
+  input: "BoxPredictor_5/ClassPredictor/biases/read/_22__cf__25"
+}
+node {
+  name: "BoxPredictor_4/BoxEncodingPredictor/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_4_3x3_s2_256/Relu6"
+  input: "BoxPredictor_4/BoxEncodingPredictor/weights/read/_17__cf__20"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "BoxPredictor_4/BoxEncodingPredictor/BiasAdd"
+  op: "BiasAdd"
+  input: "BoxPredictor_4/BoxEncodingPredictor/Conv2D"
+  input: "BoxPredictor_4/BoxEncodingPredictor/biases/read/_16__cf__19"
+}
+node {
+  name: "BoxPredictor_4/ClassPredictor/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_4_3x3_s2_256/Relu6"
+  input: "BoxPredictor_4/ClassPredictor/weights/read/_19__cf__22"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "BoxPredictor_4/ClassPredictor/BiasAdd"
+  op: "BiasAdd"
+  input: "BoxPredictor_4/ClassPredictor/Conv2D"
+  input: "BoxPredictor_4/ClassPredictor/biases/read/_18__cf__21"
+}
+node {
+  name: "BoxPredictor_3/BoxEncodingPredictor/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_3_3x3_s2_256/Relu6"
+  input: "BoxPredictor_3/BoxEncodingPredictor/weights/read/_13__cf__16"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "BoxPredictor_3/BoxEncodingPredictor/BiasAdd"
+  op: "BiasAdd"
+  input: "BoxPredictor_3/BoxEncodingPredictor/Conv2D"
+  input: "BoxPredictor_3/BoxEncodingPredictor/biases/read/_12__cf__15"
+}
+node {
+  name: "BoxPredictor_3/ClassPredictor/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_3_3x3_s2_256/Relu6"
+  input: "BoxPredictor_3/ClassPredictor/weights/read/_15__cf__18"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "BoxPredictor_3/ClassPredictor/BiasAdd"
+  op: "BiasAdd"
+  input: "BoxPredictor_3/ClassPredictor/Conv2D"
+  input: "BoxPredictor_3/ClassPredictor/biases/read/_14__cf__17"
+}
+node {
+  name: "BoxPredictor_2/BoxEncodingPredictor/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_2_3x3_s2_512/Relu6"
+  input: "BoxPredictor_2/BoxEncodingPredictor/weights/read/_9__cf__12"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "BoxPredictor_2/BoxEncodingPredictor/BiasAdd"
+  op: "BiasAdd"
+  input: "BoxPredictor_2/BoxEncodingPredictor/Conv2D"
+  input: "BoxPredictor_2/BoxEncodingPredictor/biases/read/_8__cf__11"
+}
+node {
+  name: "BoxPredictor_2/ClassPredictor/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/Conv2d_13_pointwise_2_Conv2d_2_3x3_s2_512/Relu6"
+  input: "BoxPredictor_2/ClassPredictor/weights/read/_11__cf__14"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "BoxPredictor_2/ClassPredictor/BiasAdd"
+  op: "BiasAdd"
+  input: "BoxPredictor_2/ClassPredictor/Conv2D"
+  input: "BoxPredictor_2/ClassPredictor/biases/read/_10__cf__13"
+}
+node {
+  name: "BoxPredictor_1/BoxEncodingPredictor/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_13_pointwise/Relu6"
+  input: "BoxPredictor_1/BoxEncodingPredictor/weights/read/_5__cf__8"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "BoxPredictor_1/BoxEncodingPredictor/BiasAdd"
+  op: "BiasAdd"
+  input: "BoxPredictor_1/BoxEncodingPredictor/Conv2D"
+  input: "BoxPredictor_1/BoxEncodingPredictor/biases/read/_4__cf__7"
+}
+node {
+  name: "BoxPredictor_1/ClassPredictor/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_13_pointwise/Relu6"
+  input: "BoxPredictor_1/ClassPredictor/weights/read/_7__cf__10"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "BoxPredictor_1/ClassPredictor/BiasAdd"
+  op: "BiasAdd"
+  input: "BoxPredictor_1/ClassPredictor/Conv2D"
+  input: "BoxPredictor_1/ClassPredictor/biases/read/_6__cf__9"
+}
+node {
+  name: "BoxPredictor_0/BoxEncodingPredictor/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_11_pointwise/Relu6"
+  input: "BoxPredictor_0/BoxEncodingPredictor/weights/read/_1__cf__4"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "BoxPredictor_0/BoxEncodingPredictor/BiasAdd"
+  op: "BiasAdd"
+  input: "BoxPredictor_0/BoxEncodingPredictor/Conv2D"
+  input: "BoxPredictor_0/BoxEncodingPredictor/biases/read/_0__cf__3"
+}
+node {
+  name: "BoxPredictor_0/ClassPredictor/Conv2D"
+  op: "Conv2D"
+  input: "FeatureExtractor/MobilenetV1/MobilenetV1/Conv2d_11_pointwise/Relu6"
+  input: "BoxPredictor_0/ClassPredictor/weights/read/_3__cf__6"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "BoxPredictor_0/ClassPredictor/BiasAdd"
+  op: "BiasAdd"
+  input: "BoxPredictor_0/ClassPredictor/Conv2D"
+  input: "BoxPredictor_0/ClassPredictor/biases/read/_2__cf__5"
+}
+node {
+  name: "concat/axis_flatten"
+  op: "Const"
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_INT32
+        tensor_shape {
+        }
+        int_val: -1
+      }
+    }
+  }
+}
+node {
+  name: "BoxPredictor_0/ClassPredictor/BiasAdd/Flatten"
+  op: "Flatten"
+  input: "BoxPredictor_0/ClassPredictor/BiasAdd"
+}
+node {
+  name: "BoxPredictor_1/ClassPredictor/BiasAdd/Flatten"
+  op: "Flatten"
+  input: "BoxPredictor_1/ClassPredictor/BiasAdd"
+}
+node {
+  name: "BoxPredictor_2/ClassPredictor/BiasAdd/Flatten"
+  op: "Flatten"
+  input: "BoxPredictor_2/ClassPredictor/BiasAdd"
+}
+node {
+  name: "BoxPredictor_3/ClassPredictor/BiasAdd/Flatten"
+  op: "Flatten"
+  input: "BoxPredictor_3/ClassPredictor/BiasAdd"
+}
+node {
+  name: "BoxPredictor_4/ClassPredictor/BiasAdd/Flatten"
+  op: "Flatten"
+  input: "BoxPredictor_4/ClassPredictor/BiasAdd"
+}
+node {
+  name: "BoxPredictor_5/ClassPredictor/BiasAdd/Flatten"
+  op: "Flatten"
+  input: "BoxPredictor_5/ClassPredictor/BiasAdd"
+}
+node {
+  name: "ClassPredictor/concat"
+  op: "ConcatV2"
+  input: "BoxPredictor_0/ClassPredictor/BiasAdd/Flatten"
+  input: "BoxPredictor_1/ClassPredictor/BiasAdd/Flatten"
+  input: "BoxPredictor_2/ClassPredictor/BiasAdd/Flatten"
+  input: "BoxPredictor_3/ClassPredictor/BiasAdd/Flatten"
+  input: "BoxPredictor_4/ClassPredictor/BiasAdd/Flatten"
+  input: "BoxPredictor_5/ClassPredictor/BiasAdd/Flatten"
+  input: "concat/axis_flatten"
+}
+node {
+  name: "BoxPredictor_0/BoxEncodingPredictor/BiasAdd/Flatten"
+  op: "Flatten"
+  input: "BoxPredictor_0/BoxEncodingPredictor/BiasAdd"
+}
+node {
+  name: "BoxPredictor_1/BoxEncodingPredictor/BiasAdd/Flatten"
+  op: "Flatten"
+  input: "BoxPredictor_1/BoxEncodingPredictor/BiasAdd"
+}
+node {
+  name: "BoxPredictor_2/BoxEncodingPredictor/BiasAdd/Flatten"
+  op: "Flatten"
+  input: "BoxPredictor_2/BoxEncodingPredictor/BiasAdd"
+}
+node {
+  name: "BoxPredictor_3/BoxEncodingPredictor/BiasAdd/Flatten"
+  op: "Flatten"
+  input: "BoxPredictor_3/BoxEncodingPredictor/BiasAdd"
+}
+node {
+  name: "BoxPredictor_4/BoxEncodingPredictor/BiasAdd/Flatten"
+  op: "Flatten"
+  input: "BoxPredictor_4/BoxEncodingPredictor/BiasAdd"
+}
+node {
+  name: "BoxPredictor_5/BoxEncodingPredictor/BiasAdd/Flatten"
+  op: "Flatten"
+  input: "BoxPredictor_5/BoxEncodingPredictor/BiasAdd"
+}
+node {
+  name: "BoxEncodingPredictor/concat"
+  op: "ConcatV2"
+  input: "BoxPredictor_0/BoxEncodingPredictor/BiasAdd/Flatten"
+  input: "BoxPredictor_1/BoxEncodingPredictor/BiasAdd/Flatten"
+  input: "BoxPredictor_2/BoxEncodingPredictor/BiasAdd/Flatten"
+  input: "BoxPredictor_3/BoxEncodingPredictor/BiasAdd/Flatten"
+  input: "BoxPredictor_4/BoxEncodingPredictor/BiasAdd/Flatten"
+  input: "BoxPredictor_5/BoxEncodingPredictor/BiasAdd/Flatten"
+  input: "concat/axis_flatten"
+}
+node {
+  name: "PriorBox_0"
+  op: "PriorBox"
+  input: "BoxPredictor_0/BoxEncodingPredictor/BiasAdd"
+  input: "image_tensor"
+  attr {
+    key: "clip"
+    value {
+      b: false
+    }
+  }
+  attr {
+    key: "flip"
+    value {
+      b: false
+    }
+  }
+  attr {
+    key: "height"
+    value {
+      tensor {
+        dtype: DT_FLOAT
+        tensor_shape {
+          dim {
+            size: 3
+          }
+        }
+        float_val: 30.0
+        float_val: 42.42640686035156
+        float_val: 84.85281372070312
+      }
+    }
+  }
+  attr {
+    key: "variance"
+    value {
+      tensor {
+        dtype: DT_FLOAT
+        tensor_shape {
+          dim {
+            size: 4
+          }
+        }
+        float_val: 0.10000000149011612
+        float_val: 0.10000000149011612
+        float_val: 0.20000000298023224
+        float_val: 0.20000000298023224
+      }
+    }
+  }
+  attr {
+    key: "width"
+    value {
+      tensor {
+        dtype: DT_FLOAT
+        tensor_shape {
+          dim {
+            size: 3
+          }
+        }
+        float_val: 30.0
+        float_val: 84.85281372070312
+        float_val: 42.42640686035156
+      }
+    }
+  }
+}
+node {
+  name: "PriorBox_1"
+  op: "PriorBox"
+  input: "BoxPredictor_1/BoxEncodingPredictor/BiasAdd"
+  input: "image_tensor"
+  attr {
+    key: "clip"
+    value {
+      b: false
+    }
+  }
+  attr {
+    key: "flip"
+    value {
+      b: false
+    }
+  }
+  attr {
+    key: "height"
+    value {
+      tensor {
+        dtype: DT_FLOAT
+        tensor_shape {
+          dim {
+            size: 6
+          }
+        }
+        float_val: 105.0
+        float_val: 74.24620819091797
+        float_val: 148.49241638183594
+        float_val: 60.62177658081055
+        float_val: 181.95632934570312
+        float_val: 125.4990005493164
+      }
+    }
+  }
+  attr {
+    key: "variance"
+    value {
+      tensor {
+        dtype: DT_FLOAT
+        tensor_shape {
+          dim {
+            size: 4
+          }
+        }
+        float_val: 0.10000000149011612
+        float_val: 0.10000000149011612
+        float_val: 0.20000000298023224
+        float_val: 0.20000000298023224
+      }
+    }
+  }
+  attr {
+    key: "width"
+    value {
+      tensor {
+        dtype: DT_FLOAT
+        tensor_shape {
+          dim {
+            size: 6
+          }
+        }
+        float_val: 105.0
+        float_val: 148.49241638183594
+        float_val: 74.24620819091797
+        float_val: 181.86534118652344
+        float_val: 60.591461181640625
+        float_val: 125.4990005493164
+      }
+    }
+  }
+}
+node {
+  name: "PriorBox_2"
+  op: "PriorBox"
+  input: "BoxPredictor_2/BoxEncodingPredictor/BiasAdd"
+  input: "image_tensor"
+  attr {
+    key: "clip"
+    value {
+      b: false
+    }
+  }
+  attr {
+    key: "flip"
+    value {
+      b: false
+    }
+  }
+  attr {
+    key: "height"
+    value {
+      tensor {
+        dtype: DT_FLOAT
+        tensor_shape {
+          dim {
+            size: 6
+          }
+        }
+        float_val: 150.0
+        float_val: 106.0660171508789
+        float_val: 212.1320343017578
+        float_val: 86.6025390625
+        float_val: 259.9376220703125
+        float_val: 171.0263214111328
+      }
+    }
+  }
+  attr {
+    key: "variance"
+    value {
+      tensor {
+        dtype: DT_FLOAT
+        tensor_shape {
+          dim {
+            size: 4
+          }
+        }
+        float_val: 0.10000000149011612
+        float_val: 0.10000000149011612
+        float_val: 0.20000000298023224
+        float_val: 0.20000000298023224
+      }
+    }
+  }
+  attr {
+    key: "width"
+    value {
+      tensor {
+        dtype: DT_FLOAT
+        tensor_shape {
+          dim {
+            size: 6
+          }
+        }
+        float_val: 150.0
+        float_val: 212.1320343017578
+        float_val: 106.0660171508789
+        float_val: 259.8076171875
+        float_val: 86.5592269897461
+        float_val: 171.0263214111328
+      }
+    }
+  }
+}
+node {
+  name: "PriorBox_3"
+  op: "PriorBox"
+  input: "BoxPredictor_3/BoxEncodingPredictor/BiasAdd"
+  input: "image_tensor"
+  attr {
+    key: "clip"
+    value {
+      b: false
+    }
+  }
+  attr {
+    key: "flip"
+    value {
+      b: false
+    }
+  }
+  attr {
+    key: "height"
+    value {
+      tensor {
+        dtype: DT_FLOAT
+        tensor_shape {
+          dim {
+            size: 6
+          }
+        }
+        float_val: 195.0
+        float_val: 137.8858184814453
+        float_val: 275.7716369628906
+        float_val: 112.58330535888672
+        float_val: 337.9189147949219
+        float_val: 216.3330841064453
+      }
+    }
+  }
+  attr {
+    key: "variance"
+    value {
+      tensor {
+        dtype: DT_FLOAT
+        tensor_shape {
+          dim {
+            size: 4
+          }
+        }
+        float_val: 0.10000000149011612
+        float_val: 0.10000000149011612
+        float_val: 0.20000000298023224
+        float_val: 0.20000000298023224
+      }
+    }
+  }
+  attr {
+    key: "width"
+    value {
+      tensor {
+        dtype: DT_FLOAT
+        tensor_shape {
+          dim {
+            size: 6
+          }
+        }
+        float_val: 195.0
+        float_val: 275.7716369628906
+        float_val: 137.8858184814453
+        float_val: 337.7499084472656
+        float_val: 112.5270004272461
+        float_val: 216.3330841064453
+      }
+    }
+  }
+}
+node {
+  name: "PriorBox_4"
+  op: "PriorBox"
+  input: "BoxPredictor_4/BoxEncodingPredictor/BiasAdd"
+  input: "image_tensor"
+  attr {
+    key: "clip"
+    value {
+      b: false
+    }
+  }
+  attr {
+    key: "flip"
+    value {
+      b: false
+    }
+  }
+  attr {
+    key: "height"
+    value {
+      tensor {
+        dtype: DT_FLOAT
+        tensor_shape {
+          dim {
+            size: 6
+          }
+        }
+        float_val: 240.0
+        float_val: 169.70562744140625
+        float_val: 339.4112548828125
+        float_val: 138.56407165527344
+        float_val: 415.90020751953125
+        float_val: 261.533935546875
+      }
+    }
+  }
+  attr {
+    key: "variance"
+    value {
+      tensor {
+        dtype: DT_FLOAT
+        tensor_shape {
+          dim {
+            size: 4
+          }
+        }
+        float_val: 0.10000000149011612
+        float_val: 0.10000000149011612
+        float_val: 0.20000000298023224
+        float_val: 0.20000000298023224
+      }
+    }
+  }
+  attr {
+    key: "width"
+    value {
+      tensor {
+        dtype: DT_FLOAT
+        tensor_shape {
+          dim {
+            size: 6
+          }
+        }
+        float_val: 240.0
+        float_val: 339.4112548828125
+        float_val: 169.70562744140625
+        float_val: 415.69219970703125
+        float_val: 138.49476623535156
+        float_val: 261.533935546875
+      }
+    }
+  }
+}
+node {
+  name: "PriorBox_5"
+  op: "PriorBox"
+  input: "BoxPredictor_5/BoxEncodingPredictor/BiasAdd"
+  input: "image_tensor"
+  attr {
+    key: "clip"
+    value {
+      b: false
+    }
+  }
+  attr {
+    key: "flip"
+    value {
+      b: false
+    }
+  }
+  attr {
+    key: "height"
+    value {
+      tensor {
+        dtype: DT_FLOAT
+        tensor_shape {
+          dim {
+            size: 6
+          }
+        }
+        float_val: 285.0
+        float_val: 201.5254364013672
+        float_val: 403.0508728027344
+        float_val: 164.54483032226562
+        float_val: 493.8814697265625
+        float_val: 292.4038391113281
+      }
+    }
+  }
+  attr {
+    key: "variance"
+    value {
+      tensor {
+        dtype: DT_FLOAT
+        tensor_shape {
+          dim {
+            size: 4
+          }
+        }
+        float_val: 0.10000000149011612
+        float_val: 0.10000000149011612
+        float_val: 0.20000000298023224
+        float_val: 0.20000000298023224
+      }
+    }
+  }
+  attr {
+    key: "width"
+    value {
+      tensor {
+        dtype: DT_FLOAT
+        tensor_shape {
+          dim {
+            size: 6
+          }
+        }
+        float_val: 285.0
+        float_val: 403.0508728027344
+        float_val: 201.5254364013672
+        float_val: 493.6344909667969
+        float_val: 164.46253967285156
+        float_val: 292.4038391113281
+      }
+    }
+  }
+}
+node {
+  name: "PriorBox/concat"
+  op: "ConcatV2"
+  input: "PriorBox_0"
+  input: "PriorBox_1"
+  input: "PriorBox_2"
+  input: "PriorBox_3"
+  input: "PriorBox_4"
+  input: "PriorBox_5"
+  input: "concat/axis_flatten"
+}
+node {
+  name: "ClassPredictor/concat/sigmoid"
+  op: "Sigmoid"
+  input: "ClassPredictor/concat"
+}
+node {
+  name: "detection_out"
+  op: "DetectionOutput"
+  input: "BoxEncodingPredictor/concat"
+  input: "ClassPredictor/concat/sigmoid"
+  input: "PriorBox/concat"
+  attr {
+    key: "background_label_id"
+    value {
+      i: 0
+    }
+  }
+  attr {
+    key: "code_type"
+    value {
+      s: "CENTER_SIZE"
+    }
+  }
+  attr {
+    key: "confidence_threshold"
+    value {
+      f: 0.009999999776482582
+    }
+  }
+  attr {
+    key: "keep_top_k"
+    value {
+      i: 100
+    }
+  }
+  attr {
+    key: "loc_pred_transposed"
+    value {
+      b: true
+    }
+  }
+  attr {
+    key: "nms_threshold"
+    value {
+      f: 0.6000000238418579
+    }
+  }
+  attr {
+    key: "num_classes"
+    value {
+      i: 2
+    }
+  }
+  attr {
+    key: "share_location"
+    value {
+      b: true
+    }
+  }
+  attr {
+    key: "top_k"
+    value {
+      i: 100
+    }
+  }
+}
+library {
+}
