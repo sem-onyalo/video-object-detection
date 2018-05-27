@@ -74,7 +74,7 @@ netModels = [
         'modelPath': 'models/mobilenet_ssd_v1_balls/transformed_frozen_inference_graph.pb',
         'configPath': 'models/mobilenet_ssd_v1_balls/ssd_mobilenet_v1_balls_2018_05_20.pbtxt',
         'classNames': {
-            0: 'background', 1: 'red ball'
+            0: 'background', 1: 'red ball', 2: 'blue ball'
         }
     }
 ]
