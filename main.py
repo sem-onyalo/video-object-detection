@@ -10,6 +10,7 @@ Usage:
     net_model:
         0 - MobileNet SSD V1 COCO
         1 - MobileNet SSD V1 BALLS
+        2 - MobileNet SSD V1 BOXING
 
     detect_mode:
         1 - detect all objects
@@ -75,6 +76,13 @@ netModels = [
         'configPath': 'models/mobilenet_ssd_v1_balls/ssd_mobilenet_v1_balls_2018_05_20.pbtxt',
         'classNames': {
             0: 'background', 1: 'red ball', 2: 'blue ball'
+        }
+    },
+    {
+        'modelPath': 'models/mobilenet_ssd_v1_boxing/transformed_frozen_inference_graph.pb',
+        'configPath': 'models/mobilenet_ssd_v1_boxing/ssd_mobilenet_v1_boxing_2019_02_03.pbtxt',
+        'classNames': {
+            0: 'background', 1: 'boxing gloves'
         }
     }
 ]
@@ -210,10 +218,7 @@ def run_voice_command(classNames):
     pass
 
 
-def run_video_detection(mode, netModel):
-    scoreThreshold = 0.3
-    trackingThreshold = 50
-
+def run_video_detection(mode, netModel, scoreThreshold, trackingThreshold):
     cvNet = cv.dnn.readNetFromTensorflow(netModel['modelPath'], netModel['configPath'])
     cap = create_capture()
     
@@ -250,13 +255,16 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("net_model", type=int, help="The network model id: \
         0 - MobileNet SSD V1 COCO \
-        1 - MobileNet SSD V1 BALLS")
+        1 - MobileNet SSD V1 BALLS \
+        2 - MobileNet SSD V1 BOXING")
     parser.add_argument("detect_mode", type=int, help="The detection mode: \
         1 - detect all objects \
         2 - detect a specific object \
         3 - track a specific object")
     parser.add_argument("--detect_class", help="The class to detect. Required when mode > 1")
     parser.add_argument("--voice_cmd", help="Enable voice commands", action="store_true")
+    parser.add_argument("--score_threshold", help="Only show detections with a probability of correctness above the specified threshold", type=float, default=0.3)
+    parser.add_argument("--tracking_threshold", help="Tolerance (delta) between the object being detected and the position it is supposed to be in", type=float, default=50)
     args = parser.parse_args()
     
     if args.detect_mode > 1:
@@ -267,7 +275,7 @@ if __name__ == '__main__':
             currentClassDetecting = args.detect_class
     
     showVideoStream = True
-    videoStreamThread = threading.Thread(target=run_video_detection, args=[args.detect_mode,netModels[args.net_model]])
+    videoStreamThread = threading.Thread(target=run_video_detection, args=[args.detect_mode, netModels[args.net_model], args.score_threshold, args.tracking_threshold])
     videoStreamThread.start()
 
     if args.voice_cmd:
