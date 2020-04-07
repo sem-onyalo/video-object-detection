@@ -41,6 +41,10 @@ import pyaudio
 import wave
 
 cvNet = None
+totalFrames = 0
+totalObjects = 0
+videoWriter = None
+doWriteVideo = False
 myName = 'computer'
 showVideoStream = False
 currentClassDetecting = 'background'
@@ -84,28 +88,38 @@ netModels = [
         'classNames': {
             0: 'background', 1: 'boxing gloves'
         }
+    },
+    {
+        'modelPath': 'models/ssd_inception_v2_coco/frozen_inference_graph.pb',
+        'configPath': 'models/ssd_inception_v2_coco/ssd_inception_v2_coco_2017_11_17.pbtxt',
+        'classNames': {
+            0: 'background', 1: 'person', 2: 'bicycle', 3: 'car', 4: 'motorcycle', 5: 'airplane',
+            6: 'bus', 7: 'train', 8: 'truck', 9: 'boat', 10: 'traffic light', 11: 'fire hydrant',
+            13: 'stop sign', 14: 'parking meter', 15: 'bench', 16: 'bird', 17: 'cat',
+            18: 'dog', 19: 'horse', 20: 'sheep', 21: 'cow', 22: 'elephant', 23: 'bear',
+            24: 'zebra', 25: 'giraffe', 27: 'backpack', 28: 'umbrella', 31: 'handbag',
+            32: 'tie', 33: 'suitcase', 34: 'frisbee', 35: 'skis', 36: 'snowboard',
+            37: 'sports ball', 38: 'kite', 39: 'baseball bat', 40: 'baseball glove',
+            41: 'skateboard', 42: 'surfboard', 43: 'tennis racket', 44: 'bottle',
+            46: 'wine glass', 47: 'cup', 48: 'fork', 49: 'knife', 50: 'spoon',
+            51: 'bowl', 52: 'banana', 53: 'apple', 54: 'sandwich', 55: 'orange',
+            56: 'broccoli', 57: 'carrot', 58: 'hot dog', 59: 'pizza', 60: 'donut',
+            61: 'cake', 62: 'chair', 63: 'couch', 64: 'potted plant', 65: 'bed',
+            67: 'dining table', 70: 'toilet', 72: 'tv', 73: 'laptop', 74: 'mouse',
+            75: 'remote', 76: 'keyboard', 77: 'cell phone', 78: 'microwave', 79: 'oven',
+            80: 'toaster', 81: 'sink', 82: 'refrigerator', 84: 'book', 85: 'clock',
+            86: 'vase', 87: 'scissors', 88: 'teddy bear', 89: 'hair drier', 90: 'toothbrush' 
+        }
     }
 ]
 
 
-def create_capture(source = 0):
-    source = str(source).strip()
-    chunks = source.split(':')
-    # handle drive letter ('c:', ...)
-    if len(chunks) > 1 and len(chunks[0]) == 1 and chunks[0].isalpha():
-        chunks[1] = chunks[0] + ':' + chunks[1]
-        del chunks[0]
-
-    source = chunks[0]
-    try: source = int(source)
-    except ValueError: pass
-    params = dict( s.split('=') for s in chunks[1:] )
+def create_capture(source=None):
+    if source == None:
+        source = 0
     
     cap = cv.VideoCapture(source)
-    if 'size' in params:
-        w, h = map(int, params['size'].split('x'))
-        cap.set(cv.CAP_PROP_FRAME_WIDTH, w)
-        cap.set(cv.CAP_PROP_FRAME_HEIGHT, h)
+    
     if cap is None or not cap.isOpened():
         print('Warning: unable to open video source: ', source)
     return cap
@@ -123,35 +137,46 @@ def label_class(img, detection, score, className, boxColor=None):
     yBottom = int(detection[6] * rows)
     cv.rectangle(img, (xLeft, yTop), (xRight, yBottom), boxColor, thickness=4)
 
-    label = className + ": " + str(int(round(score * 100))) + '%'
-    labelSize, baseLine = cv.getTextSize(label, cv.FONT_HERSHEY_SIMPLEX, 0.5, 1)
-    yTop = max(yTop, labelSize[1])
-    cv.rectangle(img, (xLeft, yTop - labelSize[1]), (xLeft + labelSize[0], yTop + baseLine),
-        (255, 255, 255), cv.FILLED)
-    cv.putText(img, label, (xLeft, yTop), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
-    pass
-
 def detect_all_objects(img, detections, score_threshold, classNames):
     for detection in detections:
-        class_id = int(detection[1])
+        classId = int(detection[1])
         score = float(detection[2])
         if score > score_threshold:
-            label_class(img, detection, score, classNames[class_id])
-    pass
+            label_class(img, detection, score, classNames[classId])
 
-def detect_object(img, detections, score_threshold, classNames, className):
-    for detection in detections:
-        score = float(detection[2])
-        class_id = int(detection[1])
-        if className in classNames.values() and className == classNames[class_id] and score > score_threshold:
-            label_class(img, detection, score, classNames[class_id])
-    pass
+def detect_object(img, detections, score_threshold, classNames, className, detectAllInstances):
+    objCnt = 0
+    if detectAllInstances:
+        for detection in detections:
+            score = float(detection[2])
+            classId = int(detection[1])
+            if className in classNames.values() and className == classNames[classId] and score > score_threshold:
+                objCnt += 1
+                label_class(img, detection, score, classNames[classId])
+    else: # detect the highest scored instance
+        objCnt = 1
+        instance = None
+        for detection in detections:
+            score = float(detection[2])
+            classId = int(detection[1])
+            if instance == None or (instance != None and instance['score'] < score):
+                instance = {
+                    'detection': detection,
+                    'classId': classId,
+                    'score': score
+                }
+
+        if instance != None and className in classNames.values() and className == classNames[instance['classId']] and instance['score'] > score_threshold:
+            label_class(img, instance['detection'], instance['score'], classNames[instance['classId']])
+
+    global totalObjects
+    totalObjects = objCnt
 
 def track_object(img, detections, score_threshold, classNames, className, tracking_threshold):
     for detection in detections:
         score = float(detection[2])
-        class_id = int(detection[1])
-        if className in classNames.values() and className == classNames[class_id] and score > score_threshold:
+        classId = int(detection[1])
+        if className in classNames.values() and className == classNames[classId] and score > score_threshold:
             rows = img.shape[0]
             cols = img.shape[1]
             marginLeft = int(detection[3] * cols) # xLeft
@@ -166,8 +191,7 @@ def track_object(img, detections, score_threshold, classNames, className, tracki
             else:
                 boxColor = (0, 0, 255)
 
-            label_class(img, detection, score, classNames[class_id], boxColor)
-    pass
+            label_class(img, detection, score, classNames[classId], boxColor)
 
 def play_audio(audioFile):
     chunk = 1024
@@ -217,36 +241,66 @@ def run_voice_command(classNames):
     print('exiting run_voice_command...')
     pass
 
+def addObjectCountText(img, text, scale=1, thickness=2, widthFactor=1):
+    font = cv.FONT_HERSHEY_SIMPLEX
+    imgWidth = img.shape[1]
+    imgHeight = img.shape[0]
 
-def run_video_detection(mode, netModel, scoreThreshold, trackingThreshold):
+    textSize = cv.getTextSize(text, font, scale, thickness)[0]
+    textWidth = textSize[0]
+    textHeight = textSize[1]
+
+    textPt = (15, imgHeight - 20)
+    rectPt1 = (0, imgHeight - 60)
+    rectPt2 = (textWidth + 40, imgHeight)
+
+    cv.rectangle(img, rectPt1, rectPt2, (0, 0, 0), cv.FILLED, cv.LINE_AA)
+    cv.putText(img, text, textPt, font, scale, (255, 255, 255), thickness, cv.LINE_AA)
+
+def run_video_detection(input, mode, netModel, scoreThreshold, trackingThreshold, skipFrames, detectAllInstances):
     cvNet = cv.dnn.readNetFromTensorflow(netModel['modelPath'], netModel['configPath'])
-    cap = create_capture()
+    cap = create_capture(input)
     
     global showVideoStream
+    global doWriteVideo
+    global totalFrames
+    global videoWriter
+
     while showVideoStream:
         ret, img = cap.read()
 
-        # run detection
-        cvNet.setInput(cv.dnn.blobFromImage(img, 1.0/127.5, (300, 300), (127.5, 127.5, 127.5), swapRB=True, crop=False))
-        detections = cvNet.forward()
-
-        if mode == 1:
-            detect_all_objects(img, detections[0,0,:,:], scoreThreshold, netModel['classNames'])
-        elif mode == 2:
-            detect_object(img, detections[0,0,:,:], scoreThreshold, netModel['classNames'], currentClassDetecting)
-        elif mode == 3:
-            track_object(img, detections[0,0,:,:], scoreThreshold, netModel['classNames'], currentClassDetecting, trackingThreshold)
-        
-        cv.imshow('Real-Time Object Detection', img)
-
         ch = cv.waitKey(1)
-        if ch == 27:
+        if ch == 27 or not ret:
             showVideoStream = False
             break
 
+        if totalFrames % skipFrames == 0:
+            # run detection
+            cvNet.setInput(cv.dnn.blobFromImage(img, 1.0/127.5, (300, 300), (127.5, 127.5, 127.5), swapRB=True, crop=False))
+            detections = cvNet.forward()
+
+            if mode == 1:
+                detect_all_objects(img, detections[0,0,:,:], scoreThreshold, netModel['classNames'])
+            elif mode == 2:
+                detect_object(img, detections[0,0,:,:], scoreThreshold, netModel['classNames'], currentClassDetecting, detectAllInstances)
+            elif mode == 3:
+                track_object(img, detections[0,0,:,:], scoreThreshold, netModel['classNames'], currentClassDetecting, trackingThreshold)
+
+        addObjectCountText(img, currentClassDetecting + ' count: ' + str(totalObjects))
+        cv.imshow('Real-Time Object Detection', img)
+
+        if doWriteVideo:
+            if videoWriter == None:
+                fourcc = cv.VideoWriter_fourcc(*"MJPG")
+                videoWriter = cv.VideoWriter(args.output, fourcc, 30, (img.shape[1], img.shape[0]), True)
+            videoWriter.write(img)
+        
+        totalFrames += 1
+
     print('exiting run_video_detection...')
+    if videoWriter != None:
+        videoWriter.release()
     cv.destroyAllWindows()
-    pass
 
 if __name__ == '__main__':
     import sys
@@ -256,26 +310,34 @@ if __name__ == '__main__':
     parser.add_argument("net_model", type=int, help="The network model id: \
         0 - MobileNet SSD V1 COCO \
         1 - MobileNet SSD V1 BALLS \
-        2 - MobileNet SSD V1 BOXING")
+        2 - MobileNet SSD V1 BOXING \
+        3 - Inception SSD V2 COCO")
     parser.add_argument("detect_mode", type=int, help="The detection mode: \
         1 - detect all objects \
         2 - detect a specific object \
         3 - track a specific object")
-    parser.add_argument("--detect_class", help="The class to detect. Required when mode > 1")
-    parser.add_argument("--voice_cmd", help="Enable voice commands", action="store_true")
-    parser.add_argument("--score_threshold", help="Only show detections with a probability of correctness above the specified threshold", type=float, default=0.3)
-    parser.add_argument("--tracking_threshold", help="Tolerance (delta) between the object being detected and the position it is supposed to be in", type=float, default=50)
+    parser.add_argument("-i", "--input", type=str, default=None, help="The path to the optional input video file")
+    parser.add_argument("-o", "--output", type=str, default=None, help="The path to the optional output video file")
+    parser.add_argument("-f", "--skip_frames", type=int, default=1, help="The number of frames to skip object detection")
+    parser.add_argument("-c", "--detect_class", help="The class to detect. Required when mode > 1")
+    parser.add_argument("-v", "--voice_cmd", help="Enable voice commands", action="store_true")
+    parser.add_argument("-s", "--score_threshold", help="Only show detections with a probability of correctness above the specified threshold", type=float, default=0.3)
+    parser.add_argument("-t", "--tracking_threshold", help="Tolerance (delta) between the object being detected and the position it is supposed to be in", type=float, default=50)
+    parser.add_argument("-a", "--detect_all_instances", help="When in mode 2, whether or not to detect all instances. If false then detect the highest scored instance", action="store_true")
+    # parser.add_argument("-l", "--show_labels", action="store_false")
     args = parser.parse_args()
-    
+
     if args.detect_mode > 1:
         if args.detect_class is None:
             print("Error: You must specify a class to detect if detection mode > 1")
             sys.exit(0)
         else:
             currentClassDetecting = args.detect_class
+
+    doWriteVideo = (args.output != None)
     
     showVideoStream = True
-    videoStreamThread = threading.Thread(target=run_video_detection, args=[args.detect_mode, netModels[args.net_model], args.score_threshold, args.tracking_threshold])
+    videoStreamThread = threading.Thread(target=run_video_detection, args=[args.input, args.detect_mode, netModels[args.net_model], args.score_threshold, args.tracking_threshold, args.skip_frames, args.detect_all_instances])
     videoStreamThread.start()
 
     if args.voice_cmd:
