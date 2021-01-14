@@ -110,6 +110,19 @@ netModels = [
             80: 'toaster', 81: 'sink', 82: 'refrigerator', 84: 'book', 85: 'clock',
             86: 'vase', 87: 'scissors', 88: 'teddy bear', 89: 'hair drier', 90: 'toothbrush' 
         }
+    },
+    {
+        'modelPath': 'models/face_detector/yeephycho_tf_face_detector.pb',
+        'classNames': {
+            0: 'background', 1: 'face'
+        }
+    },
+    {
+        'modelPath': 'models/mobilenet_ssd_v1_mask/frozen_inference_graph.pb',
+        'configPath': 'models/mobilenet_ssd_v1_mask/ssd_mobilenet_v1_mask_2021_01_12.pbtxt',
+        'classNames': {
+            0: 'background', 1: 'mask', 2: 'no mask'
+        }
     }
 ]
 
@@ -124,10 +137,11 @@ def create_capture(source=None):
         print('Warning: unable to open video source: ', source)
     return cap
 
-def label_class(img, detection, score, className, boxColor=None):
+def label_class(img, detection, score, className, boxColor=None, textLabelSettings=None):
     rows = img.shape[0]
     cols = img.shape[1]
 
+    boxThickness = 4
     if boxColor == None:
         boxColor = (23, 230, 210)
     
@@ -135,14 +149,34 @@ def label_class(img, detection, score, className, boxColor=None):
     yTop = int(detection[4] * rows)
     xRight = int(detection[5] * cols)
     yBottom = int(detection[6] * rows)
-    cv.rectangle(img, (xLeft, yTop), (xRight, yBottom), boxColor, thickness=4)
+    cv.rectangle(img, (xLeft, yTop), (xRight, yBottom), boxColor, boxThickness)
 
-def detect_all_objects(img, detections, score_threshold, classNames):
+    if textLabelSettings != None:
+        text = className
+        textColor = textLabelSettings['color']
+        textFont = textLabelSettings['font']
+        textScale = textLabelSettings['scale']
+        textThickness = textLabelSettings['thickness']
+        if textLabelSettings['mapping'] != None:
+            text = textLabelSettings['mapping']['text'][className]
+            textColor = textLabelSettings['mapping']['color'][className]
+        boxWidth = int(xRight - xLeft)
+        boxHeight = int(yBottom - yTop)
+        textSize = cv.getTextSize(text, textFont, textScale, textThickness)
+        textWidth = textSize[0][0]
+        textHeight = textSize[0][1]
+
+        textX = int(round((boxWidth - textWidth) / 2)) + xLeft
+        textY = int(round((boxHeight - textHeight) / 2)) + yTop + textHeight
+        
+        cv.putText(img, text, (textX, textY), textFont, textScale, textColor, textThickness, cv.LINE_AA)
+
+def detect_all_objects(img, detections, score_threshold, classNames, textLabelSettings=None):
     for detection in detections:
         classId = int(detection[1])
         score = float(detection[2])
         if score > score_threshold:
-            label_class(img, detection, score, classNames[classId])
+            label_class(img, detection, score, classNames[classId], textLabelSettings=textLabelSettings)
 
 def detect_object(img, detections, score_threshold, classNames, className, detectAllInstances):
     objCnt = 0
@@ -168,6 +202,18 @@ def detect_object(img, detections, score_threshold, classNames, className, detec
 
         if instance != None and className in classNames.values() and className == classNames[instance['classId']] and instance['score'] > score_threshold:
             label_class(img, instance['detection'], instance['score'], classNames[instance['classId']])
+
+            rows = img.shape[0]
+            cols = img.shape[1]
+            xLeft = int(instance['detection'][3] * cols)
+            xRight = int(instance['detection'][5] * cols)
+            yTop = int(instance['detection'][4] * rows)
+            yBottom = int(instance['detection'][6] * rows)
+            xFaceTracker = xLeft + int((xRight - xLeft) / 2)
+            yFaceTracker = yTop + int((yBottom - yTop) / 3)
+            faceTrackerPoint = (xFaceTracker, yFaceTracker)
+            faceTrackerPointColor = (0,0,255)
+            cv.circle(img, faceTrackerPoint, 4, faceTrackerPointColor, -1)
 
     global totalObjects
     totalObjects = objCnt
@@ -259,6 +305,7 @@ def addObjectCountText(img, text, scale=1, thickness=2, widthFactor=1):
 
 def run_video_detection(input, mode, netModel, scoreThreshold, trackingThreshold, skipFrames, detectAllInstances):
     cvNet = cv.dnn.readNetFromTensorflow(netModel['modelPath'], netModel['configPath'])
+    # cvNet = cv.dnn.readTensorFromONNX(netModel['modelPath'])
     cap = create_capture(input)
     
     global showVideoStream
@@ -279,14 +326,32 @@ def run_video_detection(input, mode, netModel, scoreThreshold, trackingThreshold
             cvNet.setInput(cv.dnn.blobFromImage(img, 1.0/127.5, (300, 300), (127.5, 127.5, 127.5), swapRB=True, crop=False))
             detections = cvNet.forward()
 
+            # TODO: pull from config and only apply if model is MASK-NOMASK
+            textLabelSettings = {
+                'font': cv.FONT_HERSHEY_COMPLEX,
+                'color': (0, 0, 255),
+                'scale': 1,
+                'thickness': 2,
+                'mapping': {
+                    'text': {
+                        'mask': 'MASK ON',
+                        'no mask': 'NO MASK'
+                    },
+                    'color': {
+                        'mask': (0, 255, 0),
+                        'no mask': (0, 0, 255)
+                    }
+                }
+            }
+
             if mode == 1:
-                detect_all_objects(img, detections[0,0,:,:], scoreThreshold, netModel['classNames'])
+                detect_all_objects(img, detections[0,0,:,:], scoreThreshold, netModel['classNames'], textLabelSettings)
             elif mode == 2:
                 detect_object(img, detections[0,0,:,:], scoreThreshold, netModel['classNames'], currentClassDetecting, detectAllInstances)
             elif mode == 3:
                 track_object(img, detections[0,0,:,:], scoreThreshold, netModel['classNames'], currentClassDetecting, trackingThreshold)
 
-        addObjectCountText(img, currentClassDetecting + ' count: ' + str(totalObjects))
+        # addObjectCountText(img, currentClassDetecting + ' count: ' + str(totalObjects))
         cv.imshow('Real-Time Object Detection', img)
 
         if doWriteVideo:
@@ -311,7 +376,9 @@ if __name__ == '__main__':
         0 - MobileNet SSD V1 COCO \
         1 - MobileNet SSD V1 BALLS \
         2 - MobileNet SSD V1 BOXING \
-        3 - Inception SSD V2 COCO")
+        3 - Inception SSD V2 COCO \
+        4 - Face Detector \
+        5 - MobileNet SSD V1 MASK/NO MASK" )
     parser.add_argument("detect_mode", type=int, help="The detection mode: \
         1 - detect all objects \
         2 - detect a specific object \
@@ -324,7 +391,7 @@ if __name__ == '__main__':
     parser.add_argument("-s", "--score_threshold", help="Only show detections with a probability of correctness above the specified threshold", type=float, default=0.3)
     parser.add_argument("-t", "--tracking_threshold", help="Tolerance (delta) between the object being detected and the position it is supposed to be in", type=float, default=50)
     parser.add_argument("-a", "--detect_all_instances", help="When in mode 2, whether or not to detect all instances. If false then detect the highest scored instance", action="store_true")
-    # parser.add_argument("-l", "--show_labels", action="store_false")
+    parser.add_argument("-l", "--show_labels", action="store_false")
     args = parser.parse_args()
 
     if args.detect_mode > 1:

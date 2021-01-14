@@ -1,2 +1,8 @@
-# video-object-detection
-Playing around with video object detection using DNN
+# Video Object Detection
+Various examples of object detection with different models.
+
+Run example:
+
+```
+python main.py 0 1
+```
